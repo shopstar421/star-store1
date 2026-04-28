@@ -6,46 +6,75 @@
     <title>STAR STORE | المتجر الرسمي</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
-        /* التنسيقات الأساسية */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
         body { background-color: #fcfcfc; color: #333; overflow-x: hidden; }
+        
+        /* الهيدر */
         header { background: white; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; }
         .logo { font-size: 26px; font-weight: 800; letter-spacing: 3px; color: #000; text-decoration: none; }
         .cart-icon { position: relative; cursor: pointer; font-size: 16px; font-weight: 600; background: #000; color: #fff; padding: 8px 18px; border-radius: 25px; }
         .cart-count { position: absolute; top: -5px; right: -5px; background: #e74c3c; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; }
-        
-        /* التصميم الجانبي والمنتجات */
-        .main-wrapper { display: flex; padding: 30px 5%; max-width: 1400px; margin: 0 auto; gap: 30px; }
-        aside { width: 220px; flex-shrink: 0; }
+
+        /* التخطيط الأساسي */
+        .main-wrapper { display: flex; padding: 20px 5%; max-width: 1400px; margin: 0 auto; gap: 20px; }
+        aside { width: 200px; flex-shrink: 0; }
+        .content { flex-grow: 1; }
+
+        /* الأقسام الجانبية */
         .filter-section h4 { margin-bottom: 15px; font-size: 16px; border-bottom: 2px solid #000; display: inline-block; padding-bottom: 5px; }
         .filter-section ul { list-style: none; margin-bottom: 20px; }
         .filter-section ul li { margin-bottom: 12px; cursor: pointer; font-size: 14px; color: #666; transition: 0.3s; }
         .filter-section ul li:hover { color: #000; font-weight: 600; }
-        .contact-box { border-top: 1px solid #eee; padding-top: 15px; }
         .wa-link { color: #25d366; text-decoration: none; font-weight: bold; display: block; margin-top: 5px; font-size: 14px; }
 
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
-        .product-card { background: white; border-radius: 15px; overflow: hidden; border: 1px solid #eee; transition: 0.3s; position: relative; }
-        .product-img { width: 100%; height: 320px; background: #f9f9f9; }
-        .product-img img { width: 100%; height: 100%; object-fit: cover; }
-        .product-info { padding: 15px; }
+        /* شبكة المنتجات - التعديل الأساسي هنا */
+        .product-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+            gap: 15px; 
+        }
 
-        /* أزرار التحكم في الكمية */
-        .qty-wrapper { display: flex; align-items: center; justify-content: center; gap: 15px; background: #f8f8f8; border-radius: 8px; margin-bottom: 10px; padding: 5px; }
-        .qty-btn { width: 30px; height: 30px; border: none; background: #ddd; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .btn-add-cart { width: 100%; background: #000; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .product-card { 
+            background: white; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            border: 1px solid #eee; 
+            transition: 0.3s; 
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+
+        .product-img { width: 100%; height: 200px; background: #f9f9f9; }
+        .product-img img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .product-info { padding: 12px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-info h3 { font-size: 14px; margin-bottom: 5px; height: 40px; overflow: hidden; }
+        .price { color: #e74c3c; font-weight: 800; margin-bottom: 10px; }
+
+        /* أزرار الكمية */
+        .qty-wrapper { display: flex; align-items: center; justify-content: center; gap: 10px; background: #f0f0f0; border-radius: 6px; margin-bottom: 10px; padding: 4px; }
+        .qty-btn { width: 25px; height: 25px; border: none; background: #fff; border-radius: 4px; cursor: pointer; font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        
+        .btn-add-cart { width: 100%; background: #000; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; }
 
         /* المودال والسلة */
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
-        .modal-content { background: white; padding: 25px; border-radius: 15px; width: 100%; max-width: 550px; max-height: 90vh; overflow-y: auto; }
-        .cart-item { display: flex; align-items: center; border-bottom: 1px solid #eee; padding: 12px 0; gap: 15px; }
-        .cart-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; }
-        .checkout-form input, .checkout-form select, .checkout-form textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; outline: none; }
-        .pay-notice { background: #fff9c4; padding: 10px; border-radius: 8px; font-size: 13px; border: 1px dashed #fbc02d; margin-top: 10px; display: none; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
+        .modal-content { background: white; padding: 20px; border-radius: 15px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
+        .cart-item { display: flex; align-items: center; border-bottom: 1px solid #eee; padding: 10px 0; gap: 10px; }
+        .cart-item img { width: 50px; height: 50px; object-fit: cover; border-radius: 5px; }
         
-        .sold-out-badge { position: absolute; top: 10px; left: 10px; background: #ff4d4d; color: white; padding: 5px 12px; border-radius: 5px; font-size: 12px; z-index: 5; }
+        .checkout-form input, .checkout-form select, .checkout-form textarea { width: 100%; padding: 10px; margin: 6px 0; border: 1px solid #ddd; border-radius: 6px; outline: none; font-size: 14px; }
+        .pay-notice { background: #fff9c4; padding: 10px; border-radius: 6px; font-size: 12px; border: 1px dashed #fbc02d; margin: 10px 0; display: none; line-height: 1.6; }
         
-        @media (max-width: 768px) { .main-wrapper { flex-direction: column; } aside { width: 100%; } }
+        .sold-out-badge { position: absolute; top: 8px; right: 8px; background: #ff4d4d; color: white; padding: 4px 8px; border-radius: 4px; font-size: 10px; z-index: 5; }
+
+        @media (max-width: 768px) {
+            .main-wrapper { flex-direction: column; }
+            aside { width: 100%; text-align: center; }
+            .product-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        }
     </style>
 </head>
 <body>
@@ -72,35 +101,34 @@
                     <li onclick="displayProducts('أحذية')">أحذية</li>
                     <li onclick="displayProducts('مستحضرات تجميل')">مستحضرات تجميل</li>
                 </ul>
-                <div class="contact-box">
-                    <p style="font-size: 13px; color: #888;">للتواصل:</p>
+                <div style="border-top: 1px solid #eee; padding-top: 10px;">
+                    <p style="font-size: 12px; color: #888;">للتواصل:</p>
                     <a href="https://wa.me/201105932868" class="wa-link">🟢 واتساب: 01105932868</a>
                 </div>
             </div>
         </aside>
 
         <main class="content">
-            <h2 id="view-title" style="margin-bottom: 25px; font-size: 22px;">أحدث الموديلات</h2>
+            <h2 id="view-title" style="margin-bottom: 20px; font-size: 20px; border-right: 4px solid #000; padding-right: 10px;">المتجر</h2>
             <div class="product-grid" id="product-display"></div>
         </main>
     </div>
 
     <div class="modal" id="cartModal">
         <div class="modal-content">
-            <h3 style="margin-bottom: 15px; border-bottom: 2px solid #000;">سلة المشتريات</h3>
+            <h3 style="margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 5px;">سلة المشتريات</h3>
             <div id="cart-items-list"></div>
             
-            <div style="background: #f9f9f9; padding: 15px; border-radius: 10px; margin-top:15px; display:flex; justify-content: space-between; font-weight: bold;">
-                <span>الإجمالي شامل الشحن:</span>
+            <div style="background: #f9f9f9; padding: 12px; border-radius: 8px; margin-top:10px; display:flex; justify-content: space-between; font-weight: bold; font-size: 14px;">
+                <span>إجمالي الطلب (شحن الفيوم):</span>
                 <span><span id="total-price">0</span> ج.م</span>
             </div>
 
-            <form class="checkout-form" id="orderForm" style="margin-top: 25px;">
-                <input type="text" id="custName" placeholder="الاسم الكامل" required>
-                <input type="tel" id="custPhone" placeholder="رقم الهاتف" required>
+            <form class="checkout-form" id="orderForm">
+                <input type="text" id="custName" placeholder="الاسم بالكامل" required>
+                <input type="tel" id="custPhone" placeholder="رقم الموبايل" required>
                 <input type="text" id="custAddr" placeholder="العنوان بالتفصيل" required>
                 
-                <label style="font-size: 14px; font-weight: bold;">طريقة الدفع:</label>
                 <select id="payMethod" onchange="updatePayInfo()" required>
                     <option value="كاش">💵 دفع عند الاستلام</option>
                     <option value="انستا باي">📱 انستا باي (InstaPay)</option>
@@ -109,12 +137,11 @@
                 </select>
 
                 <div id="payNotice" class="pay-notice"></div>
-
-                <textarea id="custNote" placeholder="ملاحظات إضافية..." rows="2"></textarea>
+                <textarea id="custNote" placeholder="ملاحظاتك للطلب..." rows="2"></textarea>
                 
-                <div style="display: flex; gap: 10px; margin-top: 20px;">
-                    <button type="button" class="btn-add-cart" style="background: #eee; color: #333;" onclick="toggleCart()">إغلاق</button>
-                    <button type="submit" class="btn-add-cart">تأكيد الطلب (واتساب)</button>
+                <div style="display: flex; gap: 8px; margin-top: 15px;">
+                    <button type="button" class="btn-add-cart" style="background: #eee; color: #333;" onclick="toggleCart()">إلغاء</button>
+                    <button type="submit" class="btn-add-cart">إرسال الطلب عبر واتساب</button>
                 </div>
             </form>
         </div>
@@ -122,9 +149,8 @@
 
     <script>
         const DB_URL = "https://star-store-826f3-default-rtdb.firebaseio.com/products.json";
-        let cart = JSON.parse(localStorage.getItem('STAR_CART_V2')) || [];
+        let cart = JSON.parse(localStorage.getItem('STAR_CART_FINAL')) || [];
 
-        // دالة لتغيير كمية المنتج في الواجهة قبل الإضافة
         function changeQtyUI(id, delta) {
             const el = document.getElementById(`q-${id}`);
             let val = parseInt(el.innerText) + delta;
@@ -134,97 +160,81 @@
 
         async function displayProducts(filter = 'all') {
             const display = document.getElementById('product-display');
-            display.innerHTML = "<p>جاري تحميل المنتجات...</p>";
-            
+            display.innerHTML = "<p>جاري التحميل...</p>";
             try {
-                const response = await fetch(DB_URL);
-                const data = await response.json();
+                const res = await fetch(DB_URL);
+                const data = await res.json();
                 display.innerHTML = "";
-
-                if (!data) return display.innerHTML = "<p>لا توجد منتجات حالياً.</p>";
+                if (!data) return display.innerHTML = "<p>المتجر فارغ حالياً.</p>";
 
                 Object.keys(data).forEach(id => {
                     const p = data[id];
                     if (filter !== 'all' && p.category !== filter) return;
-
                     display.innerHTML += `
                         <div class="product-card">
-                            ${p.soldOut ? '<div class="sold-out-badge">نفذت</div>' : ''}
+                            ${p.soldOut ? '<div class="sold-out-badge">نفذ</div>' : ''}
                             <div class="product-img"><img src="${p.image}"></div>
                             <div class="product-info">
-                                <h3>${p.name} [${p.code}]</h3>
-                                <p style="font-weight:bold; color:#e74c3c; margin: 5px 0;">${p.price} ج.م</p>
-                                
+                                <h3>${p.name}</h3>
+                                <p class="price">${p.price} ج.م</p>
                                 <div class="qty-wrapper">
                                     <button class="qty-btn" onclick="changeQtyUI('${id}', -1)">-</button>
-                                    <span id="q-${id}">1</span>
+                                    <span id="q-${id}" style="font-weight:bold">1</span>
                                     <button class="qty-btn" onclick="changeQtyUI('${id}', 1)">+</button>
                                 </div>
-
                                 <button class="btn-add-cart" onclick="addToCart('${id}', '${p.name}', ${p.price}, '${p.image}', '${p.code}')" ${p.soldOut ? 'disabled' : ''}>
-                                    ${p.soldOut ? 'غير متوفر' : 'أضف للسلة'}
+                                    ${p.soldOut ? 'غير متوفر' : 'إضافة للسلة'}
                                 </button>
                             </div>
                         </div>`;
                 });
-            } catch (e) { display.innerHTML = "<p>فشل الاتصال بالسيرفر.</p>"; }
+            } catch (e) { display.innerHTML = "فشل التحميل."; }
         }
 
         function addToCart(id, name, price, image, code) {
-            const qtyToAdd = parseInt(document.getElementById(`q-${id}`).innerText);
-            let existing = cart.find(item => item.code === code);
-            
-            if (existing) {
-                existing.qty += qtyToAdd;
-            } else {
-                cart.push({name, price, image, code, qty: qtyToAdd});
-            }
+            const qty = parseInt(document.getElementById(`q-${id}`).innerText);
+            let item = cart.find(i => i.code === code);
+            if (item) item.qty += qty; else cart.push({name, price, image, code, qty});
             updateCartUI();
-            alert(`تم إضافة ${qtyToAdd} من ${name} بنجاح!`);
-        }
-
-        function changeCartQty(index, delta) {
-            cart[index].qty += delta;
-            if (cart[index].qty < 1) cart.splice(index, 1);
-            updateCartUI();
+            alert("تمت الإضافة!");
         }
 
         function updateCartUI() {
-            localStorage.setItem('STAR_CART_V2', JSON.stringify(cart));
+            localStorage.setItem('STAR_CART_FINAL', JSON.stringify(cart));
             document.getElementById('cart-count').innerText = cart.reduce((t, i) => t + i.qty, 0);
             const list = document.getElementById('cart-items-list');
-            let subtotal = 0;
-            list.innerHTML = "";
-            
+            let sub = 0; list.innerHTML = "";
             cart.forEach((item, i) => {
-                subtotal += item.price * item.qty;
+                sub += item.price * item.qty;
                 list.innerHTML += `
                     <div class="cart-item">
                         <img src="${item.image}">
                         <div style="flex-grow:1">
-                            <p style="font-weight:bold; font-size:14px;">${item.name}</p>
-                            <div class="qty-wrapper" style="width:fit-content; margin-top:5px;">
-                                <button class="qty-btn" onclick="changeCartQty(${i}, -1)">-</button>
-                                <span style="margin:0 10px">${item.qty}</span>
-                                <button class="qty-btn" onclick="changeCartQty(${i}, 1)">+</button>
+                            <p style="font-size:12px; font-weight:bold;">${item.name}</p>
+                            <div class="qty-wrapper" style="width:fit-content; margin-top:5px; gap:5px;">
+                                <button class="qty-btn" style="width:20px; height:20px" onclick="changeCartQty(${i}, -1)">-</button>
+                                <span style="font-size:12px">${item.qty}</span>
+                                <button class="qty-btn" style="width:20px; height:20px" onclick="changeCartQty(${i}, 1)">+</button>
                             </div>
                         </div>
-                        <b>${item.price * item.qty} ج</b>
+                        <b style="font-size:13px">${item.price * item.qty}ج</b>
                     </div>`;
             });
-            document.getElementById('total-price').innerText = subtotal + 70;
+            document.getElementById('total-price').innerText = sub + 70;
+        }
+
+        function changeCartQty(i, d) {
+            cart[i].qty += d;
+            if (cart[i].qty < 1) cart.splice(i, 1);
+            updateCartUI();
         }
 
         function updatePayInfo() {
-            const method = document.getElementById('payMethod').value;
-            const notice = document.getElementById('payNotice');
-            notice.style.display = (method === 'كاش') ? 'none' : 'block';
-            
-            let text = "";
-            if(method === 'انستا باي' || method === 'فودافون كاش') text = "يرجى التحويل إلى رقم: **01021354454**";
-            else if(method === 'اتصالات كاش') text = "يرجى التحويل إلى رقم: **01105932868**";
-            
-            notice.innerHTML = `${text} <br> ⚠️ **هام:** يجب أخذ سكرين شوت لعملية الدفع وإرسالها على الواتساب: <a href="https://wa.me/201105932868" style="color:green; font-weight:bold;">01105932868</a>`;
+            const m = document.getElementById('payMethod').value;
+            const n = document.getElementById('payNotice');
+            n.style.display = (m === 'كاش') ? 'none' : 'block';
+            let num = (m === 'اتصالات كاش') ? '01105932868' : '01021354454';
+            n.innerHTML = `التحويل على رقم: **${num}**<br>⚠️ يرجى تصوير الشاشة (Screenshot) بعد الدفع وإرسالها لـ <a href="https://wa.me/201105932868" style="color:green; font-weight:bold;">خدمة العملاء</a>`;
         }
 
         function toggleCart() {
@@ -234,25 +244,10 @@
 
         document.getElementById('orderForm').onsubmit = function(e) {
             e.preventDefault();
-            if(cart.length === 0) return alert("السلة فارغة!");
-
-            let productInfo = cart.map(i => `- ${i.name} [${i.code}] (عدد: ${i.qty})`).join('\n');
-            const total = document.getElementById('total-price').innerText;
-            const pay = document.getElementById('payMethod').value;
-
-            const msg = `*طلب جديد من STAR STORE* 🌟\n\n` +
-                        `👤 العميل: ${document.getElementById('custName').value}\n` +
-                        `📞 الهاتف: ${document.getElementById('custPhone').value}\n` +
-                        `📍 العنوان: ${document.getElementById('custAddr').value}\n` +
-                        `💳 طريقة الدفع: ${pay}\n` +
-                        `📝 ملاحظات: ${document.getElementById('custNote').value || 'لا يوجد'}\n\n` +
-                        `📦 المنتجات:\n${productInfo}\n\n` +
-                        `💰 الإجمالي: ${total} ج.م`;
-
+            let pText = cart.map(i => `- ${i.name} [${i.code}] (عدد: ${i.qty})`).join('\n');
+            const msg = `*طلب جديد STAR STORE* 🌟\nالاسم: ${document.getElementById('custName').value}\nالموبايل: ${document.getElementById('custPhone').value}\nالعنوان: ${document.getElementById('custAddr').value}\nالدفع: ${document.getElementById('payMethod').value}\n\nالمنتجات:\n${pText}\n\nالإجمالي: ${document.getElementById('total-price').innerText} ج.م`;
             window.open(`https://wa.me/201105932868?text=${encodeURIComponent(msg)}`, '_blank');
-            cart = [];
-            updateCartUI();
-            toggleCart();
+            cart = []; updateCartUI(); toggleCart();
         };
 
         window.onload = () => { displayProducts('all'); updateCartUI(); };
