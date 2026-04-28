@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>لوحة إدارة STAR STORE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background-color: #f8f9fa; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-top: 5px; }
+        .btn-add { background: #27ae60; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 30px; }
+        th, td { padding: 12px; text-align: center; border-bottom: 1px solid #eee; }
+        .btn-del { background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; }
+        .btn-sold { background: #f39c12; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>إضافة منتج جديد (S-Cloud)</h2>
+    <form id="productForm">
+        <div class="form-grid">
+            <div><label>اسم المنتج</label><input type="text" id="pName" required></div>
+            <div><label>كود المنتج</label><input type="text" id="pCode" required></div>
+            <div><label>السعر</label><input type="number" id="pPrice" required></div>
+            <div>
+                <label>القسم</label>
+                <select id="pCat">
+                    <option>إكسسوارات</option><option>شنط</option><option>نضارات</option>
+                    <option>ملابس أطفال</option><option>ملابس حريمي</option><option>ملابس رجالي</option>
+                    <option>أحذية</option><option>مستحضرات تجميل</option>
+                </select>
+            </div>
+            <div style="grid-column: span 2;"><label>صورة المنتج</label><input type="file" id="pImage" accept="image/*" required></div>
+        </div>
+        <button type="submit" class="btn-add" id="submitBtn">رفع المنتج للموقع</button>
+    </form>
+
+    <div style="margin-top: 50px;">
+        <h3>المنتجات الحالية على السيرفر</h3>
+        <table>
+            <thead>
+                <tr><th>الصورة</th><th>الاسم</th><th>الحالة</th><th>التحكم</th></tr>
+            </thead>
+            <tbody id="adminList"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const DB_URL = "https://star-store-826f3-default-rtdb.firebaseio.com/products";
+    
+    let pass = prompt("كلمة مرور الإدارة:");
+    if(pass !== "mmaahh123") { window.location.href="index.html"; }
+
+    async function renderAdmin() {
+        const response = await fetch(DB_URL + ".json");
+        const data = await response.json();
+        const list = document.getElementById('adminList');
+        list.innerHTML = "";
+        if(data) {
+            Object.keys(data).forEach(id => {
+                const p = data[id];
+                list.innerHTML += `
+                    <tr>
+                        <td><img src="${p.image}" width="50"></td>
+                        <td>${p.name}</td>
+                        <td>${p.soldOut ? 'نفذت' : 'متوفر'}</td>
+                        <td>
+                            <button class="btn-sold" onclick="toggleSold('${id}', ${p.soldOut})">تبديل</button>
+                            <button class="btn-del" onclick="deleteProduct('${id}')">حذف</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+    }
+
+    document.getElementById('productForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        btn.innerText = "جاري الرفع...";
+        btn.disabled = true;
+
+        const file = document.getElementById('pImage').files[0];
+        const reader = new FileReader();
+        
+        reader.onload = async function(event) {
+            // كود ضغط الصورة (بسيط لضمان المساحة)
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = async function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 400; canvas.height = 400;
+                ctx.drawImage(img, 0, 0, 400, 400);
+                const base64Img = canvas.toDataURL('image/jpeg', 0.6);
+
+                const newP = {
+                    name: document.getElementById('pName').value,
+                    code: document.getElementById('pCode').value,
+                    price: document.getElementById('pPrice').value,
+                    category: document.getElementById('pCat').value,
+                    image: base64Img,
+                    soldOut: false
+                };
+
+                await fetch(DB_URL + ".json", { method: 'POST', body: JSON.stringify(newP) });
+                btn.innerText = "رفع المنتج للموقع";
+                btn.disabled = false;
+                document.getElementById('productForm').reset();
+                renderAdmin();
+            };
+        };
+        reader.readAsDataURL(file);
+    };
+
+    async function deleteProduct(id) {
+        if(confirm("حذف نهائي؟")) {
+            await fetch(`${DB_URL}/${id}.json`, { method: 'DELETE' });
+            renderAdmin();
+        }
+    }
+
+    async function toggleSold(id, currentStatus) {
+        await fetch(`${DB_URL}/${id}.json`, { 
+            method: 'PATCH', 
+            body: JSON.stringify({ soldOut: !currentStatus }) 
+        });
+        renderAdmin();
+    }
+
+    window.onload = renderAdmin;
+</script>
+</body>
+</html>
